@@ -4,7 +4,7 @@
 
 #if defined(WIN32) || defined(_WIN32)
 #include <Windows.h>
-// #pragma comment(linker,"\"/manifestdependency:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
+#pragma comment(linker,"\"/manifestdependency:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 #endif
 
 namespace MTK
@@ -19,6 +19,16 @@ namespace MTK
 		std::wstring windowClassName = L"MemoWindow";
 		int width = WINDOW_DEFAULT_WIDTH;
 		int height = WINDOW_DEFAULT_HEIGHT;
+	};
+
+	// Button creation settings
+	struct ButtonCreateSettings
+	{
+		std::wstring text;
+		int x = 0;
+		int y = 0;
+		int width = 0;
+		int height = 0;
 	};
 
 	// Window interface
@@ -92,5 +102,14 @@ namespace MTK
 
 		// Destroy the window
 		void Destroy() override;
+
+		// Create button
+		void AddButton(ButtonCreateSettings settings);
+
+		// On window creation
+		virtual void OnCreate() {};
+
+		// On quit - returns true to close the window
+		virtual bool OnQuit() { return true; }
 	};
 }
