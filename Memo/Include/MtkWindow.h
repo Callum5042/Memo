@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 #if defined(WIN32) || defined(_WIN32)
 #include <Windows.h>
 // #pragma comment(linker,"\"/manifestdependency:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
@@ -13,6 +15,8 @@ namespace MTK
 	// Window creation settings
 	struct WindowCreateSettings
 	{
+		std::wstring title;
+		std::wstring windowClassName = L"MemoWindow";
 		int width = WINDOW_DEFAULT_WIDTH;
 		int height = WINDOW_DEFAULT_HEIGHT;
 	};
@@ -73,19 +77,20 @@ namespace MTK
 	};
 
 	// Win32 Window
-	class Window final : public BaseWindow<Window>, public IWindow
+	class Window : public BaseWindow<Window>, public IWindow
 	{
 	public:
 		Window() = default;
 		virtual ~Window() override;
 
+		// Handle window messages
+		LRESULT HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam) override;
+
+	protected:
 		// Create the window
 		void Create(WindowCreateSettings settings) override;
 
 		// Destroy the window
 		void Destroy() override;
-
-		// Handle window messages
-		LRESULT HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam) override;
 	};
 }
