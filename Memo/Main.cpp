@@ -32,7 +32,7 @@ int main(int argc, char** argv)
 
 	// Run the message loop.
 	MSG msg = { };
-	if (GetMessage(&msg, NULL, 0, 0))
+	while (GetMessage(&msg, NULL, 0, 0))
 	{
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
