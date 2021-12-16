@@ -2,6 +2,7 @@
 
 #if defined(WIN32) || defined(_WIN32)
 #include <Windows.h>
+#pragma comment(linker,"\"/manifestdependency:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 #endif
 
 template <class TWindow>
@@ -77,7 +78,28 @@ public:
 			return false;
 		}
 
+		NONCLIENTMETRICS ncm;
+		ncm.cbSize = sizeof(NONCLIENTMETRICS);
+		::SystemParametersInfo(SPI_GETNONCLIENTMETRICS, sizeof(NONCLIENTMETRICS), &ncm, 0);
+		HFONT hFont = ::CreateFontIndirect(&ncm.lfMessageFont);
+		::SendMessage(hwnd, WM_SETFONT, (WPARAM)hFont, MAKELPARAM(TRUE, 0));
+
 		ShowWindow(hwnd, SW_SHOWNORMAL);
+
+		// Add button
+		HWND hwndButton = CreateWindow(
+			L"BUTTON",  // Predefined class; Unicode assumed 
+			L"OK",      // Button text 
+			WS_TABSTOP | WS_VISIBLE | WS_CHILD,  // Styles 
+			10,         // x position 
+			10,         // y position 
+			100,        // Button width
+			30,        // Button height
+			hwnd,     // Parent window
+			NULL,       // No menu.
+			(HINSTANCE)GetWindowLongPtr(hwnd, GWLP_HINSTANCE),
+			NULL);      // Pointer not needed.
+
 		return true;
 	}
 
