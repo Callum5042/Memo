@@ -46,11 +46,17 @@ LRESULT MTK::Window::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
 	case WM_COMMAND:
 	{
-		switch (wParam)
+		if (HIWORD(wParam) == BN_CLICKED)
 		{
-		case 1:
-			MessageBox(m_Hwnd, L"Menu", L"Menu", MB_OK);
-			break;
+			auto button_id = LOWORD(wParam);
+			if (button_id == 1)
+			{
+				MessageBox(NULL, L"Button clicked", L"Clicked", MB_OK);
+			}
+			else if (button_id == 2)
+			{
+				MessageBox(NULL, L"Another Button clicked", L"Clicked", MB_OK);
+			}
 		}
 
 		break;
@@ -84,7 +90,7 @@ void MTK::Window::AddButton(MTK::ButtonCreateSettings settings)
 	HINSTANCE hInstance = reinterpret_cast<HINSTANCE>(GetWindowLongPtr(m_Hwnd, GWLP_HINSTANCE));
 	HWND button = CreateWindow(L"BUTTON", settings.text.c_str(), WS_VISIBLE | WS_CHILD, 
 		settings.x, settings.y, settings.width, settings.height,
-		m_Hwnd, NULL, hInstance, NULL);
+		m_Hwnd, (HMENU)settings.button_id, hInstance, NULL);
 
 	if (button == NULL) 
 	{

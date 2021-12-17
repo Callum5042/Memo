@@ -29,6 +29,7 @@ namespace MTK
 		int y = 0;
 		int width = 0;
 		int height = 0;
+		int button_id = 0;
 	};
 
 	// Window interface
@@ -43,6 +44,16 @@ namespace MTK
 
 		// Destroy the window
 		virtual void Destroy() = 0;
+	};
+
+	// Button
+	class Button
+	{
+	public:
+		Button() = default;
+		virtual ~Button() = default;
+
+
 	};
 
 	// Base Win32 message loop
