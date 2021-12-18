@@ -14,28 +14,26 @@ namespace MTK
 		int height = 0;
 	};
 
-	class PushButton
+	class PushButtonV2
 	{
 	public:
-		PushButton(MTK::Window* window);
-		virtual ~PushButton();
+		PushButtonV2(MTK::Window* window);
+		virtual ~PushButtonV2() = default;
 
 		// Create window
 		void Create(ButtonCreateSettings settings);
 
-		// On click event
-		virtual void OnClick() = 0;
-
 		// Get control ID
-		constexpr int GetControlId() { return m_ControlId; }
+		constexpr __int64 GetControlId() { return m_ControlId; }
 
-	protected:
-		MTK::Window* m_Window = nullptr;
-
+		// On click event
+		std::function<void()> OnClick;
+		 
 	private:
+		MTK::Window* m_Window = nullptr;
 		HWND m_Hwnd = NULL;
 
 		// Used to determine by the window which object raises the event
-		int m_ControlId = 0;
+		__int64 m_ControlId = 0;
 	};
 }

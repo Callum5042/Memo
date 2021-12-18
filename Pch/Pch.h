@@ -5,6 +5,7 @@
 #include <vector>
 #include <unordered_map>
 #include <memory>
+#include <functional>
 
 #if defined(WIN32) || defined(_WIN32)
 #include <Windows.h>

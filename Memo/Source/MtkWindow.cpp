@@ -49,7 +49,11 @@ LRESULT MTK::Window::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 		if (HIWORD(wParam) == BN_CLICKED)
 		{
 			auto button_id = LOWORD(wParam);
-			m_PushButtons[button_id]->OnClick();
+			auto button = m_PushButtons[button_id];
+			if (button->OnClick)
+			{
+				button->OnClick();
+			}
 		}
 
 		return 0;
@@ -78,11 +82,6 @@ LRESULT MTK::Window::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 	}
 }
 
-void MTK::Window::AddButton(PushButton* button)
-{
-	m_PushButtons[button->GetControlId()] = button;
-}
-
 int MTK::Window::FindEmptyControlId()
 {
 	int id = 1;
@@ -94,4 +93,9 @@ int MTK::Window::FindEmptyControlId()
 	}
 
 	return id;
+}
+
+void MTK::Window::RegisterButton(PushButtonV2* button)
+{
+	m_PushButtons[button->GetControlId()] = button;
 }

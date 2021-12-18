@@ -74,8 +74,8 @@ namespace MTK
 		HWND m_Hwnd = NULL;
 		virtual LRESULT HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam) = 0;
 
-		//std::vector<PushButton*> m_PushButtons;
-		std::unordered_map<int, PushButton*> m_PushButtons;
+		//std::unordered_map<int, PushButton*> m_PushButtons;
+		std::unordered_map<__int64, PushButtonV2*> m_PushButtons;
 	};
 
 	// Win32 Window
@@ -89,7 +89,7 @@ namespace MTK
 		LRESULT HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam) override;
 
 		// Add button to the window
-		void AddButton(PushButton* button);
+		void RegisterButton(PushButtonV2* button);
 
 		// Get new control id
 		int FindEmptyControlId();

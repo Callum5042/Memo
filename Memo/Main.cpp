@@ -1,33 +1,9 @@
 #include "Include\MtkWindow.h"
 #include "Include\MtkPushButton.h"
 
-class MyButton : public MTK::PushButton
-{
-public:
-	MyButton(MTK::Window* window) : PushButton(window) {}
-	virtual ~MyButton() = default;
-
-	void Create()
-	{
-		MTK::ButtonCreateSettings settings;
-		settings.text = L"Click me";
-		settings.x = 10;
-		settings.y = 10;
-		settings.width = 100;
-		settings.height = 20;
-
-		PushButton::Create(settings);
-	}
-
-	void OnClick() override
-	{
-		MessageBox(NULL, L"MyButton Clicked", L"Button", MB_OK);
-	}
-};
-
 class MainWindow : public MTK::Window
 {
-	MTK::PushButton* button = nullptr;
+	std::unique_ptr<MTK::PushButtonV2> m_DefaultButton = nullptr;
 
 public:
 	MainWindow() = default;
@@ -48,8 +24,21 @@ public:
 	// On creation
 	void OnCreate() override
 	{
-		MyButton* button = new MyButton(this);
-		button->Create();
+		{
+			MTK::ButtonCreateSettings settings;
+			settings.text = L"Click me";
+			settings.x = 10;
+			settings.y = 10;
+			settings.width = 100;
+			settings.height = 20;
+
+			m_DefaultButton = std::make_unique<MTK::PushButtonV2>(this);
+			m_DefaultButton->Create(settings);
+			m_DefaultButton->OnClick = []()
+			{
+				MessageBox(NULL, L"Lambda button", L"Button", MB_OK);
+			};
+		}
 
 
 		// Add UI Elements
