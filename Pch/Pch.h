@@ -3,6 +3,8 @@
 #include <string>
 #include <memory>
 #include <vector>
+#include <unordered_map>
+#include <memory>
 
 #if defined(WIN32) || defined(_WIN32)
 #include <Windows.h>

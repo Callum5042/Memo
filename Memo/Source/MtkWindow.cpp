@@ -49,17 +49,10 @@ LRESULT MTK::Window::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 		if (HIWORD(wParam) == BN_CLICKED)
 		{
 			auto button_id = LOWORD(wParam);
-			if (button_id == 1)
-			{
-				MessageBox(NULL, L"Button clicked", L"Clicked", MB_OK);
-			}
-			else if (button_id == 2)
-			{
-				MessageBox(NULL, L"Another Button clicked", L"Clicked", MB_OK);
-			}
+			m_PushButtons[button_id]->OnClick();
 		}
 
-		break;
+		return 0;
 	}
 
 	case WM_CREATE:
@@ -85,15 +78,20 @@ LRESULT MTK::Window::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 	}
 }
 
-void MTK::Window::AddButton(MTK::ButtonCreateSettings settings)
+void MTK::Window::AddButton(PushButton* button)
 {
-	HINSTANCE hInstance = reinterpret_cast<HINSTANCE>(GetWindowLongPtr(m_Hwnd, GWLP_HINSTANCE));
-	HWND button = CreateWindow(L"BUTTON", settings.text.c_str(), WS_VISIBLE | WS_CHILD, 
-		settings.x, settings.y, settings.width, settings.height,
-		m_Hwnd, (HMENU)settings.button_id, hInstance, NULL);
+	m_PushButtons[button->GetControlId()] = button;
+}
 
-	if (button == NULL) 
+int MTK::Window::FindEmptyControlId()
+{
+	int id = 1;
+	auto it = m_PushButtons.find(id);
+	while (it != m_PushButtons.cend())
 	{
-		throw std::exception("CreateWindow failed!");
+		id++;
+		it = m_PushButtons.find(id);
 	}
+
+	return id;
 }

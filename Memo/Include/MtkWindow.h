@@ -1,14 +1,10 @@
 #pragma once
 
-#include <string>
-
-#if defined(WIN32) || defined(_WIN32)
-#include <Windows.h>
-#pragma comment(linker,"\"/manifestdependency:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
-#endif
+#include "MtkPushButton.h"
 
 namespace MTK
 {
+
 	constexpr int WINDOW_DEFAULT_WIDTH = 0;
 	constexpr int WINDOW_DEFAULT_HEIGHT = 0;
 
@@ -19,17 +15,6 @@ namespace MTK
 		std::wstring windowClassName = L"MemoWindow";
 		int width = WINDOW_DEFAULT_WIDTH;
 		int height = WINDOW_DEFAULT_HEIGHT;
-	};
-
-	// Button creation settings
-	struct ButtonCreateSettings
-	{
-		std::wstring text;
-		int x = 0;
-		int y = 0;
-		int width = 0;
-		int height = 0;
-		int button_id = 0;
 	};
 
 	// Window interface
@@ -44,16 +29,6 @@ namespace MTK
 
 		// Destroy the window
 		virtual void Destroy() = 0;
-	};
-
-	// Button
-	class Button
-	{
-	public:
-		Button() = default;
-		virtual ~Button() = default;
-
-
 	};
 
 	// Base Win32 message loop
@@ -92,9 +67,15 @@ namespace MTK
 			}
 		}
 
+		// Get Win32 handle
+		constexpr HWND GetHwnd() { return m_Hwnd; }
+
 	protected:
 		HWND m_Hwnd = NULL;
 		virtual LRESULT HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam) = 0;
+
+		//std::vector<PushButton*> m_PushButtons;
+		std::unordered_map<int, PushButton*> m_PushButtons;
 	};
 
 	// Win32 Window
@@ -107,15 +88,18 @@ namespace MTK
 		// Handle window messages
 		LRESULT HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam) override;
 
+		// Add button to the window
+		void AddButton(PushButton* button);
+
+		// Get new control id
+		int FindEmptyControlId();
+
 	protected:
 		// Create the window
 		void Create(WindowCreateSettings settings) override;
 
 		// Destroy the window
 		void Destroy() override;
-
-		// Create button
-		void AddButton(ButtonCreateSettings settings);
 
 		// On window creation
 		virtual void OnCreate() {};

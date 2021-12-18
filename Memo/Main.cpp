@@ -1,8 +1,34 @@
 #include "Include\MtkWindow.h"
-#include <memory>
+#include "Include\MtkPushButton.h"
+
+class MyButton : public MTK::PushButton
+{
+public:
+	MyButton(MTK::Window* window) : PushButton(window) {}
+	virtual ~MyButton() = default;
+
+	void Create()
+	{
+		MTK::ButtonCreateSettings settings;
+		settings.text = L"Click me";
+		settings.x = 10;
+		settings.y = 10;
+		settings.width = 100;
+		settings.height = 20;
+
+		PushButton::Create(settings);
+	}
+
+	void OnClick() override
+	{
+		MessageBox(NULL, L"MyButton Clicked", L"Button", MB_OK);
+	}
+};
 
 class MainWindow : public MTK::Window
 {
+	MTK::PushButton* button = nullptr;
+
 public:
 	MainWindow() = default;
 	virtual ~MainWindow() = default;
@@ -22,9 +48,16 @@ public:
 	// On creation
 	void OnCreate() override
 	{
+		MyButton* button = new MyButton(this);
+		button->Create();
+
+
 		// Add UI Elements
-		AddButton(MTK::ButtonCreateSettings{ L"Click me", 10, 10, 100, 20, 1 });
-		AddButton(MTK::ButtonCreateSettings{ L"Click me tooo", 10, 50, 100, 20, 2 });
+		/*button = new MyButton(this);
+		button->Create(MTK::ButtonCreateSettings{ L"Click me", 10, 10, 100, 20, 1 });*/
+
+		/*AddButton(MTK::ButtonCreateSettings{ L"Click me", 10, 10, 100, 20, 1 });
+		AddButton(MTK::ButtonCreateSettings{ L"Click me tooo", 10, 50, 100, 20, 2 });*/
 
 		// Add menu
 		/*HMENU menu = CreateMenu();

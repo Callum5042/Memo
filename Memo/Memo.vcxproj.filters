@@ -21,9 +21,15 @@
     <ClCompile Include="Source\MtkWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\MtkPushButton.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\MtkWindow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\MtkPushButton.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
