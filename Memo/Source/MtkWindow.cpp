@@ -15,7 +15,8 @@ void MTK::Window::Create(WindowCreateSettings settings)
 	WNDCLASS wndClass = {};
 	wndClass.lpfnWndProc = WindowProc;
 	wndClass.hInstance = hInstance;
-	wndClass.lpszClassName = L"MemoWnd";
+	wndClass.lpszClassName = settings.windowClassName.c_str();
+	wndClass.hCursor = LoadCursor(NULL, IDC_ARROW);
 
 	if (!RegisterClass(&wndClass))
 	{
@@ -23,7 +24,7 @@ void MTK::Window::Create(WindowCreateSettings settings)
 	}
 
 	// Create the window
-	m_Hwnd = CreateWindowEx(0, L"MemoWnd", L"Learn to Program Windows", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL, NULL, hInstance, this);
+	m_Hwnd = CreateWindowEx(0, settings.windowClassName.c_str(), settings.title.c_str(), WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, settings.width, settings.height, NULL, NULL, hInstance, this);
 
 	if (m_Hwnd == NULL)
 	{
@@ -43,6 +44,35 @@ LRESULT MTK::Window::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	switch (uMsg)
 	{
+	case WM_COMMAND:
+	{
+		if (HIWORD(wParam) == BN_CLICKED)
+		{
+			auto button_id = LOWORD(wParam);
+			auto button = m_PushButtons[button_id];
+			if (button->OnClick)
+			{
+				button->OnClick();
+			}
+		}
+
+		return 0;
+	}
+
+	case WM_CREATE:
+		OnCreate();
+		return 0;
+
+	case WM_QUIT:
+		if (OnQuit())
+		{
+			return 0;
+		}
+		else
+		{
+			return DefWindowProc(m_Hwnd, uMsg, wParam, lParam);
+		}
+
 	case WM_DESTROY:
 		PostQuitMessage(0);
 		return 0;
@@ -50,4 +80,22 @@ LRESULT MTK::Window::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 	default:
 		return DefWindowProc(m_Hwnd, uMsg, wParam, lParam);
 	}
+}
+
+int MTK::Window::FindEmptyControlId()
+{
+	int id = 1;
+	auto it = m_PushButtons.find(id);
+	while (it != m_PushButtons.cend())
+	{
+		id++;
+		it = m_PushButtons.find(id);
+	}
+
+	return id;
+}
+
+void MTK::Window::RegisterButton(PushButtonV2* button)
+{
+	m_PushButtons[button->GetControlId()] = button;
 }
