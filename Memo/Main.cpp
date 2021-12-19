@@ -49,13 +49,13 @@ public:
 		AddButton(MTK::ButtonCreateSettings{ L"Click me tooo", 10, 50, 100, 20, 2 });*/
 
 		// Add menu
-		/*HMENU menu = CreateMenu();
+		HMENU menu = CreateMenu();
 		HMENU fileMenu = CreateMenu();
 
 		AppendMenu(menu, MF_POPUP, reinterpret_cast<UINT_PTR>(fileMenu), L"File");
-		AppendMenu(fileMenu, MF_STRING, 1, L"Open");
+		AppendMenu(fileMenu, MF_STRING, 10, L"Open");
 
-		SetMenu(m_Hwnd, menu);*/
+		SetMenu(m_Hwnd, menu);
 	}
 };
 

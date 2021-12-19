@@ -1,0 +1,53 @@
+﻿<Window x:Class="Memo.WPF.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+
+    <DockPanel>
+        <DockPanel DockPanel.Dock="Top">
+            
+            <!-- Menu -->
+            <Menu x:Name="MenuBar">
+                <MenuItem Header="File">
+                    <MenuItem Header="New Tab" Click="MenuItem_NewTab_Click"></MenuItem>
+                </MenuItem>
+            </Menu>
+            
+        </DockPanel>
+        <DockPanel>
+            
+            <!-- Tab Control -->
+            <TabControl x:Name="Tabs">
+                
+                <!-- Tab Resources-->
+                <TabControl.Resources>
+                    <ContextMenu x:Key="resourceContextMenu">
+                        <MenuItem Header="Pop out"></MenuItem>
+                        <MenuItem Header="Close"></MenuItem>
+                    </ContextMenu>
+                </TabControl.Resources>
+
+                <!-- Tab Styles -->
+                <TabControl.ItemContainerStyle>
+                    <Style TargetType="TabItem">
+                        <!--<EventSetter Event="PreviewMouseLeftButtonDown" Handler="OnMouseLeftDown_CopyPassword" />-->
+                        <Setter Property="ContextMenu" Value="{StaticResource resourceContextMenu}" />
+                    </Style>
+                </TabControl.ItemContainerStyle>
+                
+                <!-- Tabs -->
+                <TabItem MouseRightButtonDown="TabItem_MouseRightButtonDown">
+                    <TabItem.Header>
+                        Tab 1
+                    </TabItem.Header>
+                </TabItem>
+                
+            </TabControl>
+            
+        </DockPanel>
+    </DockPanel>
+
+</Window>
