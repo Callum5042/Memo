@@ -10,7 +10,7 @@
         <DockPanel DockPanel.Dock="Top">
             
             <!-- Menu -->
-            <Menu x:Name="MenuBar">
+            <Menu x:Name="MenuBar" Background="White">
                 <MenuItem Header="File">
                     <MenuItem Header="New Tab" Click="MenuItem_NewTab_Click"></MenuItem>
                 </MenuItem>
@@ -25,6 +25,7 @@
                 <!-- Tab Resources-->
                 <TabControl.Resources>
                     <ContextMenu x:Key="resourceContextMenu">
+                        <MenuItem Header="Rename"></MenuItem>
                         <MenuItem Header="Pop out"></MenuItem>
                         <MenuItem Header="Close"></MenuItem>
                     </ContextMenu>
@@ -33,16 +34,21 @@
                 <!-- Tab Styles -->
                 <TabControl.ItemContainerStyle>
                     <Style TargetType="TabItem">
-                        <!--<EventSetter Event="PreviewMouseLeftButtonDown" Handler="OnMouseLeftDown_CopyPassword" />-->
                         <Setter Property="ContextMenu" Value="{StaticResource resourceContextMenu}" />
                     </Style>
                 </TabControl.ItemContainerStyle>
                 
                 <!-- Tabs -->
-                <TabItem MouseRightButtonDown="TabItem_MouseRightButtonDown">
+                <TabItem>
                     <TabItem.Header>
-                        Tab 1
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock>New Tab</TextBlock>
+                            <TextBlock Margin="2,0,0,0">🞨</TextBlock>
+                        </StackPanel>
                     </TabItem.Header>
+                    <ScrollViewer>
+                        <TextBox TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Visible" />
+                    </ScrollViewer>
                 </TabItem>
                 
             </TabControl>

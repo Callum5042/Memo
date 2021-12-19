@@ -28,19 +28,11 @@ namespace Memo.WPF
         private void MenuItem_NewTab_Click(object sender, RoutedEventArgs e)
         {
             // Add new tab and auto switch to that tab
-            Tabs.Items.Add(new TabItem()
-            {
-                Header = "New Tab",
-                IsSelected = true
-            });
-
-
-        }
-
-        private void TabItem_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            var menu = new Menu();
-
+            //Tabs.Items.Add(new TabItem()
+            //{
+            //    Header = "New Tab",
+            //    IsSelected = true
+            //});
         }
     }
 }
