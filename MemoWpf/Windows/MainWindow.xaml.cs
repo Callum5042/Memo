@@ -30,17 +30,16 @@ namespace Memo.WPF.Windows
             InitializeComponent();
 
             // Load tab thing
-            _tabs.Add(new Tab() { Title = "Testing" });
-            Tabs.DataContext = _tabs;
+            var tab = new Tab() { Title = "New Tab" };
+            _tabs.Add(tab);
+            Tabs.SelectedItem = tab;
+
+            DataContext = _tabs;
         }
 
         private void MenuItem_NewTab_Click(object sender, RoutedEventArgs e)
         {
-            var tab = new Tab()
-            {
-                Title = "New Tab"
-            };
-
+            var tab = new Tab() { Title = "New Tab" };
             _tabs.Add(tab);
             Tabs.SelectedItem = tab;
         }
@@ -138,6 +137,28 @@ namespace Memo.WPF.Windows
 
                 _tabs.Add(tab);
                 Tabs.SelectedItem = tab;
+            }
+        }
+
+        private async void MenuItem_Save_Click(object sender, RoutedEventArgs e)
+        {
+            if (Tabs.SelectedItem is Tab activeTab)
+            {
+                // Open dialog
+                var dialog = new SaveFileDialog()
+                {
+                    DefaultExt = ".txt",
+                    Filter = "Text documents (.txt)|*.txt"
+                };
+
+                var result = dialog.ShowDialog();
+                if (result == true)
+                {
+                    // Save file
+                    using var file = File.OpenWrite(dialog.FileName);
+                    using var writer = new StreamWriter(file);
+                    await writer.WriteAsync(activeTab.Text);
+                }
             }
         }
     }

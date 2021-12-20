@@ -14,7 +14,7 @@
                 <MenuItem Header="File">
                     <MenuItem Header="New Tab" Click="MenuItem_NewTab_Click"></MenuItem>
                     <MenuItem Header="_Open" Click="MenuItem_Open_Click"></MenuItem>
-                    <MenuItem Header="Save"></MenuItem>
+                    <MenuItem Header="Save" Click="MenuItem_Save_Click"></MenuItem>
                 </MenuItem>
             </Menu>
 
@@ -50,7 +50,7 @@
                 <!-- Tab Item Content -->
                 <TabControl.ContentTemplate>
                     <DataTemplate>
-                        <TextBox Text="{Binding Text}" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Visible" Padding="2" />
+                        <TextBox Text="{Binding Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Visible" Padding="2" />
                     </DataTemplate>
                 </TabControl.ContentTemplate>
 
