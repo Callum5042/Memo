@@ -5,6 +5,7 @@ namespace Memo.WPF
     public class Tab : INotifyPropertyChanged
     {
         private string? _title;
+        private string? _text;
 
         public string? Title
         {
@@ -15,6 +16,19 @@ namespace Memo.WPF
                 {
                     _title = value;
                     OnPropertyChanged(nameof(Title));
+                }
+            }
+        }
+
+        public string? Text
+        {
+            get => _text;
+            set
+            {
+                if (value != _text)
+                {
+                    _text = value;
+                    OnPropertyChanged(nameof(Text));
                 }
             }
         }

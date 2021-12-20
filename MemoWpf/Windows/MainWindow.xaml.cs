@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.Win32;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -45,46 +47,53 @@ namespace Memo.WPF.Windows
 
         private void MenuItem_PopOut_Click(object sender, RoutedEventArgs e)
         {
-            var window = new Window
+            var menuItem = sender as MenuItem;
+            if (menuItem?.DataContext != null)
             {
-                ResizeMode = ResizeMode.CanResizeWithGrip,
-                WindowStyle = WindowStyle.None,
-                Topmost = true,
-                Width = 200,
-                Height = 100,
-                Background = new SolidColorBrush(Colors.White),
-                BorderBrush = new SolidColorBrush(Colors.LightGray),
-                AllowsTransparency = true,
-                ShowInTaskbar = false
-            };
-
-            window.BorderThickness = new Thickness(1.0);
-            //window.Background.Opacity = 0.5;
-
-            // Enable mouse events to pass through the window
-            //window.SourceInitialized += (sender, e) =>
-            //{
-            //    var hwnd = new WindowInteropHelper(window).Handle;
-            //    WindowsServices.SetWindowExTransparent(hwnd);
-            //};
-            
-            // Allow window to be dragged anywhere
-            window.MouseDown += (sender, e) =>
-            {
-                if (e.ChangedButton == MouseButton.Left)
+                if (menuItem.DataContext is Tab tab)
                 {
-                    window.DragMove();
+                    var window = new Window
+                    {
+                        ResizeMode = ResizeMode.CanResizeWithGrip,
+                        WindowStyle = WindowStyle.None,
+                        Topmost = true,
+                        Width = 200,
+                        Height = 100,
+                        Background = new SolidColorBrush(Colors.White),
+                        BorderBrush = new SolidColorBrush(Colors.LightGray),
+                        AllowsTransparency = true,
+                        ShowInTaskbar = false
+                    };
+
+                    window.BorderThickness = new Thickness(1.0);
+                    //window.Background.Opacity = 0.5;
+
+                    // Enable mouse events to pass through the window
+                    //window.SourceInitialized += (sender, e) =>
+                    //{
+                    //    var hwnd = new WindowInteropHelper(window).Handle;
+                    //    WindowsServices.SetWindowExTransparent(hwnd);
+                    //};
+
+                    // Allow window to be dragged anywhere
+                    window.MouseDown += (sender, e) =>
+                    {
+                        if (e.ChangedButton == MouseButton.Left)
+                        {
+                            window.DragMove();
+                        }
+                    };
+
+                    // Add text
+                    var text = new TextBlock();
+                    text.Text = tab.Text;
+                    text.Padding = new Thickness(5.0, 0.0, 5.0, 0.0);
+
+                    window.Content = text;
+
+                    window.Show();
                 }
-            };
-
-            // Add text
-            var text = new TextBlock();
-            text.Text = "Hello, World!";
-            text.Padding = new Thickness(5.0, 0.0, 5.0, 0.0);
-
-            window.Content = text;
-
-            window.Show();
+            }
         }
 
         private void MenuItem_RenameTab_Click(object sender, RoutedEventArgs e)
@@ -101,6 +110,34 @@ namespace Memo.WPF.Windows
                 {
                     _tabs.Remove(tab);
                 }
+            }
+        }
+
+        private async void MenuItem_Open_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new OpenFileDialog()
+            {
+                DefaultExt = ".txt",
+                Filter = "Text documents (.txt)|*.txt"
+            };
+
+            var result = dialog.ShowDialog();
+            if (result == true)
+            {
+                // Read file
+                using var file = File.OpenRead(dialog.FileName);
+                using var reader = new StreamReader(file);
+                var text = await reader.ReadToEndAsync();
+
+                // Open new tab
+                var tab = new Tab()
+                {
+                    Title = dialog.SafeFileName,
+                    Text = text
+                };
+
+                _tabs.Add(tab);
+                Tabs.SelectedItem = tab;
             }
         }
     }
