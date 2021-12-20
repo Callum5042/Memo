@@ -1,4 +1,4 @@
-﻿<Window x:Class="Memo.WPF.MainWindow"
+﻿<Window x:Class="Memo.WPF.Windows.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -20,14 +20,14 @@
         <DockPanel>
 
             <!-- Tab Control -->
-            <TabControl x:Name="Tabs">
+            <TabControl x:Name="Tabs" ItemsSource="{Binding}">
 
                 <!-- Tab Resources-->
                 <TabControl.Resources>
                     <ContextMenu x:Key="resourceContextMenu">
-                        <MenuItem Header="Rename"></MenuItem>
+                        <MenuItem Header="Rename" Click="MenuItem_RenameTab_Click"></MenuItem>
                         <MenuItem Header="Pop out" Click="MenuItem_PopOut_Click"></MenuItem>
-                        <MenuItem Header="Close"></MenuItem>
+                        <MenuItem Header="Close" Click="MenuItem_CloseTab_Click"></MenuItem>
                     </ContextMenu>
                 </TabControl.Resources>
 
@@ -38,16 +38,19 @@
                     </Style>
                 </TabControl.ItemContainerStyle>
 
-                <!-- Tabs -->
-                <TabItem>
-                    <TabItem.Header>
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock>New Tab</TextBlock>
-                            <TextBlock Margin="2,0,0,0">🞨</TextBlock>
-                        </StackPanel>
-                    </TabItem.Header>
-                    <TextBox TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Visible" Padding="2" />
-                </TabItem>
+                <!-- Tab Item Header -->
+                <TabControl.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Title}" />
+                    </DataTemplate>
+                </TabControl.ItemTemplate>
+
+                <!-- Tab Item Content -->
+                <TabControl.ContentTemplate>
+                    <DataTemplate>
+                        <TextBox Text="{Binding Title}" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Visible" Padding="2" />
+                    </DataTemplate>
+                </TabControl.ContentTemplate>
 
             </TabControl>
 

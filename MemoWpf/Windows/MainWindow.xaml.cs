@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -15,44 +14,33 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Memo.WPF
+namespace Memo.WPF.Windows
 {
-    public static class WindowsServices
-    {
-        const int WS_EX_TRANSPARENT = 0x00000020;
-        const int GWL_EXSTYLE = (-20);
-
-        [DllImport("user32.dll")]
-        static extern int GetWindowLong(IntPtr hwnd, int index);
-
-        [DllImport("user32.dll")]
-        static extern int SetWindowLong(IntPtr hwnd, int index, int newStyle);
-
-        public static void SetWindowExTransparent(IntPtr hwnd)
-        {
-            var extendedStyle = GetWindowLong(hwnd, GWL_EXSTYLE);
-            SetWindowLong(hwnd, GWL_EXSTYLE, extendedStyle | WS_EX_TRANSPARENT);
-        }
-    }
-
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
     {
+        private readonly ObservableCollection<Tab> _tabs = new ObservableCollection<Tab>();
+
         public MainWindow()
         {
             InitializeComponent();
+
+            // Load tab thing
+            _tabs.Add(new Tab() { Title = "Testing" });
+            Tabs.DataContext = _tabs;
         }
 
         private void MenuItem_NewTab_Click(object sender, RoutedEventArgs e)
         {
-            // Add new tab and auto switch to that tab
-            //Tabs.Items.Add(new TabItem()
-            //{
-            //    Header = "New Tab",
-            //    IsSelected = true
-            //});
+            var tab = new Tab()
+            {
+                Title = "New Tab"
+            };
+
+            _tabs.Add(tab);
+            Tabs.SelectedItem = tab;
         }
 
         private void MenuItem_PopOut_Click(object sender, RoutedEventArgs e)
@@ -97,6 +85,23 @@ namespace Memo.WPF
             window.Content = text;
 
             window.Show();
+        }
+
+        private void MenuItem_RenameTab_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Rename tab");
+        }
+
+        private void MenuItem_CloseTab_Click(object sender, RoutedEventArgs e)
+        {
+            var menuItem = sender as MenuItem;
+            if (menuItem?.DataContext != null)
+            {
+                if (menuItem.DataContext is Tab tab)
+                {
+                    _tabs.Remove(tab);
+                }
+            }
         }
     }
 }
