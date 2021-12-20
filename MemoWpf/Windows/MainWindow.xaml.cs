@@ -51,44 +51,8 @@ namespace Memo.WPF.Windows
             {
                 if (menuItem.DataContext is Tab tab)
                 {
-                    var window = new Window
-                    {
-                        ResizeMode = ResizeMode.CanResizeWithGrip,
-                        WindowStyle = WindowStyle.None,
-                        Topmost = true,
-                        Width = 200,
-                        Height = 100,
-                        Background = new SolidColorBrush(Colors.White),
-                        BorderBrush = new SolidColorBrush(Colors.LightGray),
-                        AllowsTransparency = true,
-                        ShowInTaskbar = false
-                    };
-
-                    window.BorderThickness = new Thickness(1.0);
-                    //window.Background.Opacity = 0.5;
-
-                    // Enable mouse events to pass through the window
-                    //window.SourceInitialized += (sender, e) =>
-                    //{
-                    //    var hwnd = new WindowInteropHelper(window).Handle;
-                    //    WindowsServices.SetWindowExTransparent(hwnd);
-                    //};
-
-                    // Allow window to be dragged anywhere
-                    window.MouseDown += (sender, e) =>
-                    {
-                        if (e.ChangedButton == MouseButton.Left)
-                        {
-                            window.DragMove();
-                        }
-                    };
-
-                    // Add text
-                    var text = new TextBlock();
-                    text.Text = tab.Text;
-                    text.Padding = new Thickness(5.0, 0.0, 5.0, 0.0);
-
-                    window.Content = text;
+                    var window = new PopoutWindow();
+                    window.TextBlock.Text = tab.Text;
 
                     window.Show();
                 }
