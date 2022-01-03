@@ -7,6 +7,9 @@
 #include <d2d1.h>
 #pragma comment(lib, "d2d1")
 
+#include <dwrite.h>
+#pragma comment(lib, "dwrite")
+
 template <class TWindow>
 class BaseWindow
 {
@@ -97,6 +100,10 @@ class Window : public BaseWindow<Window>
 	ID2D1SolidColorBrush* pBrush;
 	D2D1_ELLIPSE            ellipse;
 
+
+	IDWriteFactory* m_pDWriteFactory = nullptr;
+	IDWriteTextFormat* m_pTextFormat = nullptr;
+
 public:
 	Window() = default;
 	virtual ~Window() = default;
@@ -139,6 +146,18 @@ public:
 				}
 			}
 		}
+
+		// DirectWrite
+		hr = DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED, __uuidof(m_pDWriteFactory), reinterpret_cast<IUnknown**>(&m_pDWriteFactory));
+
+		static const WCHAR msc_fontName[] = L"Verdana";
+		static const FLOAT msc_fontSize = 50;
+
+		hr = m_pDWriteFactory->CreateTextFormat(msc_fontName, NULL, DWRITE_FONT_WEIGHT_NORMAL, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, msc_fontSize, L"", &m_pTextFormat);
+
+		m_pTextFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
+		m_pTextFormat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
+
 		return hr;
 	}
 
@@ -156,7 +175,7 @@ public:
 			PAINTSTRUCT ps;
 			BeginPaint(m_Hwnd, &ps);
 
-			pRenderTarget->BeginDraw();
+			/*pRenderTarget->BeginDraw();
 
 			pRenderTarget->Clear(D2D1::ColorF(D2D1::ColorF::SkyBlue));
 			pRenderTarget->FillEllipse(ellipse, pBrush);
@@ -165,7 +184,29 @@ public:
 			if (FAILED(hr) || hr == D2DERR_RECREATE_TARGET)
 			{
 				DiscardGraphicsResources();
-			}
+			}*/
+
+			static const WCHAR sc_helloWorld[] = L"Hello, World!";
+
+			// Retrieve the size of the render target.
+			D2D1_SIZE_F renderTargetSize = pRenderTarget->GetSize();
+
+			pRenderTarget->BeginDraw();
+
+			pRenderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
+
+			pRenderTarget->Clear(D2D1::ColorF(D2D1::ColorF::White));
+
+			pRenderTarget->DrawText(
+				sc_helloWorld,
+				ARRAYSIZE(sc_helloWorld) - 1,
+				m_pTextFormat,
+				D2D1::RectF(0, 0, renderTargetSize.width, renderTargetSize.height),
+				pBrush
+			);
+
+			hr = pRenderTarget->EndDraw();
+
 
 			EndPaint(m_Hwnd, &ps);
 		}
