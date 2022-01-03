@@ -65,7 +65,7 @@ public:
 		HWND hwnd = CreateWindowEx(
 			0,                              // Optional window styles.
 			L"MemoWnd",                     // Window class
-			L"Learn to Program Windows",    // Window text
+			L"DirectWrite Demo",			// Window text
 			WS_OVERLAPPEDWINDOW,            // Window style
 
 			// Size and position
@@ -95,30 +95,18 @@ protected:
 
 class Window : public BaseWindow<Window>
 {
-	ID2D1Factory* pFactory;
-	ID2D1HwndRenderTarget* pRenderTarget;
-	ID2D1SolidColorBrush* pBrush;
-	D2D1_ELLIPSE            ellipse;
+	// Direct2D
+	ID2D1Factory* pFactory = nullptr;
+	ID2D1HwndRenderTarget* pRenderTarget = nullptr;
+	ID2D1SolidColorBrush* pBrush = nullptr;
 
-
+	// DirectWrite
 	IDWriteFactory* m_pDWriteFactory = nullptr;
 	IDWriteTextFormat* m_pTextFormat = nullptr;
 
 public:
 	Window() = default;
 	virtual ~Window() = default;
-
-	void CalculateLayout()
-	{
-		if (pRenderTarget != NULL)
-		{
-			D2D1_SIZE_F size = pRenderTarget->GetSize();
-			const float x = size.width / 2;
-			const float y = size.height / 2;
-			const float radius = min(x, y);
-			ellipse = D2D1::Ellipse(D2D1::Point2F(x, y), radius, radius);
-		}
-	}
 
 	HRESULT CreateGraphicsResources()
 	{
@@ -129,21 +117,12 @@ public:
 			GetClientRect(m_Hwnd, &rc);
 
 			D2D1_SIZE_U size = D2D1::SizeU(rc.right, rc.bottom);
-
-			hr = pFactory->CreateHwndRenderTarget(
-				D2D1::RenderTargetProperties(),
-				D2D1::HwndRenderTargetProperties(m_Hwnd, size),
-				&pRenderTarget);
+			hr = pFactory->CreateHwndRenderTarget(D2D1::RenderTargetProperties(), D2D1::HwndRenderTargetProperties(m_Hwnd, size), &pRenderTarget);
 
 			if (SUCCEEDED(hr))
 			{
-				const D2D1_COLOR_F color = D2D1::ColorF(1.0f, 1.0f, 0);
+				const D2D1_COLOR_F color = D2D1::ColorF(0.0f, 0.0f, 0.0f);
 				hr = pRenderTarget->CreateSolidColorBrush(color, &pBrush);
-
-				if (SUCCEEDED(hr))
-				{
-					CalculateLayout();
-				}
 			}
 		}
 
@@ -161,54 +140,23 @@ public:
 		return hr;
 	}
 
-	void DiscardGraphicsResources()
-	{
-		//SafeRelease(&pRenderTarget);
-		//SafeRelease(&pBrush);
-	}
-
 	void OnPaint()
 	{
 		HRESULT hr = CreateGraphicsResources();
 		if (SUCCEEDED(hr))
 		{
-			PAINTSTRUCT ps;
-			BeginPaint(m_Hwnd, &ps);
-
-			/*pRenderTarget->BeginDraw();
-
-			pRenderTarget->Clear(D2D1::ColorF(D2D1::ColorF::SkyBlue));
-			pRenderTarget->FillEllipse(ellipse, pBrush);
-
-			hr = pRenderTarget->EndDraw();
-			if (FAILED(hr) || hr == D2DERR_RECREATE_TARGET)
-			{
-				DiscardGraphicsResources();
-			}*/
-
 			static const WCHAR sc_helloWorld[] = L"Hello, World!";
 
 			// Retrieve the size of the render target.
 			D2D1_SIZE_F renderTargetSize = pRenderTarget->GetSize();
 
 			pRenderTarget->BeginDraw();
-
 			pRenderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
-
 			pRenderTarget->Clear(D2D1::ColorF(D2D1::ColorF::White));
 
-			pRenderTarget->DrawText(
-				sc_helloWorld,
-				ARRAYSIZE(sc_helloWorld) - 1,
-				m_pTextFormat,
-				D2D1::RectF(0, 0, renderTargetSize.width, renderTargetSize.height),
-				pBrush
-			);
+			pRenderTarget->DrawText(sc_helloWorld, ARRAYSIZE(sc_helloWorld) - 1, m_pTextFormat, D2D1::RectF(0, 0, renderTargetSize.width, renderTargetSize.height), pBrush);
 
 			hr = pRenderTarget->EndDraw();
-
-
-			EndPaint(m_Hwnd, &ps);
 		}
 	}
 
@@ -220,9 +168,8 @@ public:
 			GetClientRect(m_Hwnd, &rc);
 
 			D2D1_SIZE_U size = D2D1::SizeU(rc.right, rc.bottom);
-
 			pRenderTarget->Resize(size);
-			CalculateLayout();
+
 			InvalidateRect(m_Hwnd, NULL, FALSE);
 		}
 	}
@@ -242,12 +189,6 @@ public:
 		case WM_DESTROY:
 			PostQuitMessage(0);
 			return 0;
-
-		case WM_PAINT:
-		{
-			OnPaint();
-			return 0;
-		}
 
 		case WM_SIZE:
 			Resize();
@@ -277,10 +218,17 @@ int main(int argc, char** argv)
 
 	// Run the message loop.
 	MSG msg = { };
-	while (GetMessage(&msg, NULL, 0, 0))
+	while (msg.message != WM_QUIT)
 	{
-		TranslateMessage(&msg);
-		DispatchMessage(&msg);
+		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+		{
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
+		}
+		else
+		{
+			window->OnPaint();
+		}
 	}
 
 	return 0;
