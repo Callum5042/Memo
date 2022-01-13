@@ -1,6 +1,10 @@
-﻿using Microsoft.Win32;
+﻿using Hardcodet.Wpf.TaskbarNotification;
+using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -24,6 +28,7 @@ namespace Memo.WPF.Windows
     public partial class MainWindow : Window
     {
         private readonly ObservableCollection<Tab> _tabs = new ObservableCollection<Tab>();
+        private bool _canClose = false;
 
         public MainWindow()
         {
@@ -124,6 +129,25 @@ namespace Memo.WPF.Windows
                     await writer.WriteAsync(activeTab.Text);
                 }
             }
+        }
+
+        private void Window_Closing(object sender, CancelEventArgs e)
+        {
+            // Only close if we have selected exit from the menu, otherwise minimise to the taskbar
+            if (_canClose)
+            {
+                return;
+            }
+
+            e.Cancel = true;
+            WindowState = WindowState.Minimized;
+            // ShowInTaskbar = false;
+        }
+
+        private void MenuItem_Exit_Click(object sender, RoutedEventArgs e)
+        {
+            _canClose = true;
+            Close();
         }
     }
 }
