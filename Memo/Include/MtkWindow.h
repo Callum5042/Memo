@@ -94,6 +94,8 @@ namespace MTK
 		// Get new control id
 		int FindEmptyControlId();
 
+		NOTIFYICONDATA m_Icon = {};
+
 	protected:
 		// Create the window
 		void Create(WindowCreateSettings settings) override;
