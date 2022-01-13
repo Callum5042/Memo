@@ -142,6 +142,8 @@ namespace Memo.WPF.Windows
             e.Cancel = true;
             WindowState = WindowState.Minimized;
             // ShowInTaskbar = false;
+
+
         }
 
         private void MenuItem_Exit_Click(object sender, RoutedEventArgs e)
