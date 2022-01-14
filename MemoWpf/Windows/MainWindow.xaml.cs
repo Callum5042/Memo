@@ -1,24 +1,12 @@
-﻿using Hardcodet.Wpf.TaskbarNotification;
-using Microsoft.Win32;
+﻿using Microsoft.Win32;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Interop;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace Memo.WPF.Windows
 {
@@ -140,10 +128,19 @@ namespace Memo.WPF.Windows
             }
 
             e.Cancel = true;
-            WindowState = WindowState.Minimized;
+            //WindowState = WindowState.Minimized;
             // ShowInTaskbar = false;
 
+            var wih = new WindowInteropHelper(this);
+            var trayIcon = new TrayIcon(wih.Handle);
 
+            var notifyIconData = new NotifyIconData();
+            notifyIconData.cbSize = (uint)Marshal.SizeOf(notifyIconData);
+            notifyIconData.uFlags = NotifyIconFlags.NIF_ICON | NotifyIconFlags.NIF_TIP | NotifyIconFlags.NIF_GUID | NotifyIconFlags.NIF_MESSAGE;
+            notifyIconData.hWnd = wih.Handle;
+
+
+            trayIcon.AddIcon(notifyIconData);
         }
 
         private void MenuItem_Exit_Click(object sender, RoutedEventArgs e)
