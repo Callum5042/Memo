@@ -6,6 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
 using System.IO;
+using System.Windows;
+using System.Windows.Interop;
 
 namespace Memo.WPF
 {
@@ -57,16 +59,50 @@ namespace Memo.WPF
 
     public class TrayIcon : IDisposable
     {
+        private const int APPWM_ICONNOTIFY = 102435;
         private NotifyIconData _notifyIconData = new NotifyIconData();
 
-        public TrayIcon(IntPtr hWnd)
+        public TrayIcon(Window window)
         {
+            var wih = new WindowInteropHelper(window);
+
             _notifyIconData.cbSize = (uint)Marshal.SizeOf(_notifyIconData);
-            _notifyIconData.hWnd = hWnd;
+            _notifyIconData.hWnd = wih.Handle;
             _notifyIconData.szTip = "Test Application";
             _notifyIconData.uFlags = NotifyIconFlags.NIF_ICON | NotifyIconFlags.NIF_TIP | NotifyIconFlags.NIF_GUID | NotifyIconFlags.NIF_MESSAGE;
+            _notifyIconData.uCallbackMessage = APPWM_ICONNOTIFY;
 
             SetIcon(@"memo.ico");
+
+            // Hook WndProc
+            HwndSource source = (HwndSource)PresentationSource.FromVisual(window);
+            source.AddHook(WndProc);
+        }
+
+        public Action? LeftMouseButtonUp { get; set; }
+
+        public Action? RightMouseButtonUp { get; set; }
+
+        private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+        {
+            if (msg == APPWM_ICONNOTIFY)
+            {
+                const int WM_LBUTTONUP = 0x0202;
+                const int WM_RBUTTONUP = 0x0205;
+
+                switch ((int)lParam)
+                {
+                    case WM_LBUTTONUP:
+                        LeftMouseButtonUp?.Invoke();
+                        break;
+
+                    case WM_RBUTTONUP:
+                        RightMouseButtonUp?.Invoke();
+                        break;
+                }
+            }
+
+            return IntPtr.Zero;
         }
 
         [DllImport("Shell32.dll", EntryPoint = "Shell_NotifyIconW")]

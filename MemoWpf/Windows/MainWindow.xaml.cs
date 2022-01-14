@@ -27,9 +27,18 @@ namespace Memo.WPF.Windows
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             // Add system tray icon
-            var wih = new WindowInteropHelper(this);
-            _trayIcon = new TrayIcon(wih.Handle);
+            _trayIcon = new TrayIcon(this);
             _trayIcon.AddIcon();
+
+            _trayIcon.LeftMouseButtonUp += () =>
+            {
+                WindowState = WindowState.Normal;
+            };
+
+            _trayIcon.RightMouseButtonUp += () =>
+            {
+                MessageBox.Show("Hello, Window");
+            };
 
             // Load tab thing
             var tab = new Tab() { Title = "New Tab" };
