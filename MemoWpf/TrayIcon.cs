@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
+using System.IO;
 
 namespace Memo.WPF
 {
@@ -65,8 +66,7 @@ namespace Memo.WPF
             _notifyIconData.szTip = "Test Application";
             _notifyIconData.uFlags = NotifyIconFlags.NIF_ICON | NotifyIconFlags.NIF_TIP | NotifyIconFlags.NIF_GUID | NotifyIconFlags.NIF_MESSAGE;
 
-            var image = (Bitmap)Image.FromFile(@"memo.ico");
-            _notifyIconData.hIcon = image.GetHicon();
+            SetIcon(@"memo.ico");
         }
 
         [DllImport("Shell32.dll", EntryPoint = "Shell_NotifyIconW")]
@@ -93,6 +93,23 @@ namespace Memo.WPF
         public void Dispose()
         {
             Shell_NotifyIcon(TrayMessage.NIM_DELETE, _notifyIconData);
+        }
+
+        public void UpdateIcon()
+        {
+            Shell_NotifyIcon(TrayMessage.NIM_MODIFY, _notifyIconData);
+        }
+
+        void SetIcon(Stream stream)
+        {
+            var bitmap = (Bitmap)Image.FromStream(stream);
+            _notifyIconData.hIcon = bitmap.GetHicon();
+        }
+
+        void SetIcon(string path)
+        {
+            var bitmap = (Bitmap)Image.FromFile(path);
+            _notifyIconData.hIcon = bitmap.GetHicon();
         }
     }
 }
