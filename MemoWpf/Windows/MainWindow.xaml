@@ -9,7 +9,7 @@
 
     <DockPanel>
         
-        <DockPanel DockPanel.Dock="Top">
+        <DockPanel DockPanel.Dock="Top" Loaded="Window_Loaded">
 
             <!-- Menu -->
             <Menu x:Name="MenuBar" Background="White">

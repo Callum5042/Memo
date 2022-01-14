@@ -17,10 +17,19 @@ namespace Memo.WPF.Windows
     {
         private readonly ObservableCollection<Tab> _tabs = new ObservableCollection<Tab>();
         private bool _canClose = false;
+        private TrayIcon? _trayIcon = null;
 
         public MainWindow()
         {
             InitializeComponent();
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            // Add system tray icon
+            var wih = new WindowInteropHelper(this);
+            _trayIcon = new TrayIcon(wih.Handle);
+            _trayIcon.AddIcon();
 
             // Load tab thing
             var tab = new Tab() { Title = "New Tab" };
@@ -124,23 +133,13 @@ namespace Memo.WPF.Windows
             // Only close if we have selected exit from the menu, otherwise minimise to the taskbar
             if (_canClose)
             {
+                _trayIcon?.Dispose();
                 return;
             }
 
             e.Cancel = true;
-            //WindowState = WindowState.Minimized;
+            WindowState = WindowState.Minimized;
             // ShowInTaskbar = false;
-
-            var wih = new WindowInteropHelper(this);
-            var trayIcon = new TrayIcon(wih.Handle);
-
-            var notifyIconData = new NotifyIconData();
-            notifyIconData.cbSize = (uint)Marshal.SizeOf(notifyIconData);
-            notifyIconData.uFlags = NotifyIconFlags.NIF_ICON | NotifyIconFlags.NIF_TIP | NotifyIconFlags.NIF_GUID | NotifyIconFlags.NIF_MESSAGE;
-            notifyIconData.hWnd = wih.Handle;
-
-
-            trayIcon.AddIcon(notifyIconData);
         }
 
         private void MenuItem_Exit_Click(object sender, RoutedEventArgs e)

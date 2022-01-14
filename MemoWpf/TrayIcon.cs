@@ -39,7 +39,10 @@ namespace Memo.WPF
         public NotifyIconFlags uFlags;
         public uint uCallbackMessage;
         public IntPtr hIcon;
+
+        [MarshalAs(UnmanagedType.LPWStr, SizeConst = 128)]
         public string szTip;
+
         public uint dwState;
         public uint dwStateMask;
         public string szInfo;
@@ -50,16 +53,19 @@ namespace Memo.WPF
         public IntPtr hBalloonIcon;
     }
 
-    public class TrayIcon
+    public class TrayIcon : IDisposable
     {
-        private readonly IntPtr _hWnd;
+        private NotifyIconData _notifyIconData = new NotifyIconData();
 
         public TrayIcon(IntPtr hWnd)
         {
-            _hWnd = hWnd;
+            _notifyIconData.cbSize = (uint)Marshal.SizeOf(_notifyIconData);
+            _notifyIconData.hWnd = hWnd;
+            _notifyIconData.szTip = "Test Application";
+            _notifyIconData.uFlags = NotifyIconFlags.NIF_ICON | NotifyIconFlags.NIF_TIP | NotifyIconFlags.NIF_GUID | NotifyIconFlags.NIF_MESSAGE;
         }
 
-        [DllImport("Shell32.dll")]
+        [DllImport("Shell32.dll", EntryPoint = "Shell_NotifyIconW")]
         private static extern bool Shell_NotifyIcon(TrayMessage dwMessage, NotifyIconData notifyIconData);
 
         private enum TrayMessage : uint
@@ -71,13 +77,18 @@ namespace Memo.WPF
             NIM_SETVERSION = 0x00000004
         }
 
-        public void AddIcon(NotifyIconData notifyIconData)
+        public void AddIcon()
         {
-            var result = Shell_NotifyIcon(TrayMessage.NIM_ADD, notifyIconData);
+            var result = Shell_NotifyIcon(TrayMessage.NIM_ADD, _notifyIconData);
             if (!result)
             {
-                throw new InvalidOperationException("Shell_NotifyIcon failed");
+                return;
             }
+        }
+
+        public void Dispose()
+        {
+            Shell_NotifyIcon(TrayMessage.NIM_DELETE, _notifyIconData);
         }
     }
 }
