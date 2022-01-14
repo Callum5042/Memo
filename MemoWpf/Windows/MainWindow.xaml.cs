@@ -24,6 +24,9 @@ namespace Memo.WPF.Windows
             InitializeComponent();
         }
 
+        [DllImport("user32.dll", EntryPoint = "SetForegroundWindow")]
+        private static extern bool SetForegroundWindow(IntPtr hWnd);
+
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             // Add system tray icon
@@ -36,6 +39,8 @@ namespace Memo.WPF.Windows
             {
                 if (FindResource("systemTrayContextMenu") is ContextMenu contextMenu)
                 {
+                    var wih = new WindowInteropHelper(this);
+                    SetForegroundWindow(wih.Handle);
                     contextMenu.IsOpen = true;
                 }
             };
