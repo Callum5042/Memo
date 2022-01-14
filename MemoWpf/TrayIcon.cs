@@ -30,7 +30,7 @@ namespace Memo.WPF
         NIF_SHOWTIP = 0x00000080
     }
 
-    [StructLayout(LayoutKind.Sequential)]
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
     public struct NotifyIconData
     {
         public uint cbSize;
@@ -39,14 +39,14 @@ namespace Memo.WPF
         public NotifyIconFlags uFlags;
         public uint uCallbackMessage;
         public IntPtr hIcon;
-
-        [MarshalAs(UnmanagedType.LPWStr, SizeConst = 128)]
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)]
         public string szTip;
-
         public uint dwState;
         public uint dwStateMask;
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
         public string szInfo;
         public UnionName unionName;
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 64)]
         public string szInfoTitle;
         public uint dwInfoFlags;
         public Guid guidItem;
