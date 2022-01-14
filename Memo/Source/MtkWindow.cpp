@@ -100,6 +100,8 @@ LRESULT MTK::Window::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 			InsertMenu(hPopupMenu, 0, MF_BYPOSITION | MF_STRING, 1001, L"Play");
 			SetForegroundWindow(m_Hwnd);
 			TrackPopupMenu(hPopupMenu, TPM_BOTTOMALIGN | TPM_LEFTALIGN, cursor.x, cursor.y, 0, m_Hwnd, NULL);
+
+			PostMessage(m_Hwnd, WM_NULL, 0, 0);
 		}
 
 		return 0;
