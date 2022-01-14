@@ -33,12 +33,12 @@ namespace Memo.WPF.Windows
             _trayIcon.LeftMouseButtonUp += () =>
             {
                 WindowState = WindowState.Normal;
+                ShowInTaskbar = true;
             };
 
             _trayIcon.RightMouseButtonUp += () =>
             {
-                var contextMenu = FindResource("systemTrayContextMenu") as ContextMenu;
-                if (contextMenu != null)
+                if (FindResource("systemTrayContextMenu") is ContextMenu contextMenu)
                 {
                     contextMenu.IsOpen = true;
                 }
@@ -151,8 +151,8 @@ namespace Memo.WPF.Windows
             }
 
             e.Cancel = true;
+            ShowInTaskbar = false;
             WindowState = WindowState.Minimized;
-            // ShowInTaskbar = false;
         }
 
         private void MenuItem_Exit_Click(object sender, RoutedEventArgs e)
