@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Drawing;
 
 namespace Memo.WPF
 {
@@ -63,6 +64,9 @@ namespace Memo.WPF
             _notifyIconData.hWnd = hWnd;
             _notifyIconData.szTip = "Test Application";
             _notifyIconData.uFlags = NotifyIconFlags.NIF_ICON | NotifyIconFlags.NIF_TIP | NotifyIconFlags.NIF_GUID | NotifyIconFlags.NIF_MESSAGE;
+
+            var image = (Bitmap)Image.FromFile(@"memo.ico");
+            _notifyIconData.hIcon = image.GetHicon();
         }
 
         [DllImport("Shell32.dll", EntryPoint = "Shell_NotifyIconW")]
