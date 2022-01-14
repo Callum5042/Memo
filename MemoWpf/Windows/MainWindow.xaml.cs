@@ -37,7 +37,11 @@ namespace Memo.WPF.Windows
 
             _trayIcon.RightMouseButtonUp += () =>
             {
-                MessageBox.Show("Hello, Window");
+                var contextMenu = FindResource("systemTrayContextMenu") as ContextMenu;
+                if (contextMenu != null)
+                {
+                    contextMenu.IsOpen = true;
+                }
             };
 
             // Load tab thing
@@ -152,6 +156,12 @@ namespace Memo.WPF.Windows
         }
 
         private void MenuItem_Exit_Click(object sender, RoutedEventArgs e)
+        {
+            _canClose = true;
+            Close();
+        }
+
+        private void SystemTray_Click_Exit(object sender, RoutedEventArgs e)
         {
             _canClose = true;
             Close();
