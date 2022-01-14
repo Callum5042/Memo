@@ -30,11 +30,7 @@ namespace Memo.WPF.Windows
             _trayIcon = new TrayIcon(this);
             _trayIcon.AddIcon();
 
-            _trayIcon.LeftMouseButtonUp += () =>
-            {
-                WindowState = WindowState.Normal;
-                ShowInTaskbar = true;
-            };
+            _trayIcon.LeftMouseButtonUp += () => RestoreWindow();
 
             _trayIcon.RightMouseButtonUp += () =>
             {
@@ -50,6 +46,12 @@ namespace Memo.WPF.Windows
             Tabs.SelectedItem = tab;
 
             DataContext = _tabs;
+        }
+
+        private void RestoreWindow()
+        {
+            WindowState = WindowState.Normal;
+            ShowInTaskbar = true;
         }
 
         private void MenuItem_NewTab_Click(object sender, RoutedEventArgs e)
@@ -165,6 +167,11 @@ namespace Memo.WPF.Windows
         {
             _canClose = true;
             Close();
+        }
+
+        private void SystemTray_Click_Restore(object sender, RoutedEventArgs e)
+        {
+            RestoreWindow();
         }
     }
 }

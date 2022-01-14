@@ -8,7 +8,9 @@
         Title="Memo" Height="450" Width="800">
 
     <Window.Resources>
-        <ContextMenu x:Key="systemTrayContextMenu">
+        <ContextMenu x:Key="systemTrayContextMenu" Placement="MousePoint">
+            <MenuItem Header="Restore" Click="SystemTray_Click_Restore"></MenuItem>
+            <Separator />
             <MenuItem Header="Exit" Click="SystemTray_Click_Exit"></MenuItem>
         </ContextMenu>
     </Window.Resources>
