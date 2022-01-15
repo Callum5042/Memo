@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Drawing;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
 
@@ -68,15 +64,25 @@ namespace Memo.WPF
 
             _notifyIconData.cbSize = (uint)Marshal.SizeOf(_notifyIconData);
             _notifyIconData.hWnd = wih.Handle;
-            _notifyIconData.szTip = "Test Application";
             _notifyIconData.uFlags = NotifyIconFlags.NIF_ICON | NotifyIconFlags.NIF_TIP | NotifyIconFlags.NIF_GUID | NotifyIconFlags.NIF_MESSAGE;
             _notifyIconData.uCallbackMessage = APPWM_ICONNOTIFY;
-
-            SetIcon(@"memo.ico");
 
             // Hook WndProc
             HwndSource source = (HwndSource)PresentationSource.FromVisual(window);
             source.AddHook(WndProc);
+        }
+
+        public string ToolTip 
+        {
+            get => _notifyIconData.szTip;
+            set
+            {
+                _notifyIconData.szTip = value;
+                if (!_notifyIconData.uFlags.HasFlag(NotifyIconFlags.NIF_TIP))
+                {
+                    _notifyIconData.uFlags |= NotifyIconFlags.NIF_TIP;
+                }
+            }
         }
 
         public Action? LeftMouseButtonUp { get; set; }
@@ -136,13 +142,13 @@ namespace Memo.WPF
             Shell_NotifyIcon(TrayMessage.NIM_MODIFY, _notifyIconData);
         }
 
-        void SetIcon(Stream stream)
+        public void SetIcon(Stream stream)
         {
             var bitmap = (Bitmap)Image.FromStream(stream);
             _notifyIconData.hIcon = bitmap.GetHicon();
         }
 
-        void SetIcon(string path)
+        public void SetIcon(string path)
         {
             var bitmap = (Bitmap)Image.FromFile(path);
             _notifyIconData.hIcon = bitmap.GetHicon();

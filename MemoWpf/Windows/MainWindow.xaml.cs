@@ -31,6 +31,9 @@ namespace Memo.WPF.Windows
         {
             // Add system tray icon
             _trayIcon = new TrayIcon(this);
+            _trayIcon.ToolTip = "Testing";
+            _trayIcon.SetIcon(@"app.ico");
+
             _trayIcon.AddIcon();
 
             _trayIcon.LeftMouseButtonUp += () => RestoreWindow();
