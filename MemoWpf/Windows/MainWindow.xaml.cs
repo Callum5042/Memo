@@ -55,8 +55,8 @@ namespace Memo.WPF.Windows
 
         private void RestoreWindow()
         {
-            WindowState = WindowState.Normal;
             ShowInTaskbar = true;
+            Visibility = Visibility.Visible;
         }
 
         private void MenuItem_NewTab_Click(object sender, RoutedEventArgs e)
@@ -159,7 +159,7 @@ namespace Memo.WPF.Windows
 
             e.Cancel = true;
             ShowInTaskbar = false;
-            WindowState = WindowState.Minimized;
+            Visibility = Visibility.Hidden;
         }
 
         private void MenuItem_Exit_Click(object sender, RoutedEventArgs e)
