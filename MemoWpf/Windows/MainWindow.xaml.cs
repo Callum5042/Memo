@@ -30,14 +30,16 @@ namespace Memo.WPF.Windows
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             // Add system tray icon
-            _trayIcon = new TrayIcon(this);
-            _trayIcon.ToolTip = "Testing";
-            _trayIcon.SetIcon(@"app.ico");
+            _trayIcon = new TrayIcon(this)
+            {
+                ToolTip = "Testing",
+                Icon = Properties.Resources.SystemTrayIcon
+            };
 
             _trayIcon.AddIcon();
 
+            // System tray icon events
             _trayIcon.LeftMouseButtonUp += () => RestoreWindow();
-
             _trayIcon.RightMouseButtonUp += () =>
             {
                 if (FindResource("systemTrayContextMenu") is ContextMenu contextMenu)

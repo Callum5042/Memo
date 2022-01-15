@@ -64,7 +64,7 @@ namespace Memo.WPF
 
             _notifyIconData.cbSize = (uint)Marshal.SizeOf(_notifyIconData);
             _notifyIconData.hWnd = wih.Handle;
-            _notifyIconData.uFlags = NotifyIconFlags.NIF_ICON | NotifyIconFlags.NIF_TIP | NotifyIconFlags.NIF_GUID | NotifyIconFlags.NIF_MESSAGE;
+            _notifyIconData.uFlags = NotifyIconFlags.NIF_GUID | NotifyIconFlags.NIF_MESSAGE;
             _notifyIconData.uCallbackMessage = APPWM_ICONNOTIFY;
 
             // Hook WndProc
@@ -77,10 +77,17 @@ namespace Memo.WPF
             get => _notifyIconData.szTip;
             set
             {
-                _notifyIconData.szTip = value;
-                if (!_notifyIconData.uFlags.HasFlag(NotifyIconFlags.NIF_TIP))
+                if (string.IsNullOrWhiteSpace(value))
                 {
-                    _notifyIconData.uFlags |= NotifyIconFlags.NIF_TIP;
+                    _notifyIconData.uFlags &= ~NotifyIconFlags.NIF_TIP;
+                }
+                else
+                {
+                    _notifyIconData.szTip = value;
+                    if (!_notifyIconData.uFlags.HasFlag(NotifyIconFlags.NIF_TIP))
+                    {
+                        _notifyIconData.uFlags |= NotifyIconFlags.NIF_TIP;
+                    }
                 }
             }
         }
@@ -134,6 +141,7 @@ namespace Memo.WPF
 
         public void Dispose()
         {
+            GC.SuppressFinalize(this);
             Shell_NotifyIcon(TrayMessage.NIM_DELETE, _notifyIconData);
         }
 
@@ -142,16 +150,32 @@ namespace Memo.WPF
             Shell_NotifyIcon(TrayMessage.NIM_MODIFY, _notifyIconData);
         }
 
-        public void SetIcon(Stream stream)
-        {
-            var bitmap = (Bitmap)Image.FromStream(stream);
-            _notifyIconData.hIcon = bitmap.GetHicon();
-        }
+        private Icon? _icon;
 
-        public void SetIcon(string path)
+        public Icon Icon
         {
-            var bitmap = (Bitmap)Image.FromFile(path);
-            _notifyIconData.hIcon = bitmap.GetHicon();
+            set
+            {
+                if (value == null)
+                {
+                    // Remove NIF_ICON flag if null
+                    _notifyIconData.uFlags &= ~NotifyIconFlags.NIF_ICON;
+                    _icon = null;
+                    return;
+                }
+                else
+                {
+                    // Set value to hidden field so GC doesn't clean up the resource (since we only want the pointer)
+                    _icon = value;
+
+                    // Add flag if new
+                    _notifyIconData.hIcon = _icon.Handle;
+                    if (!_notifyIconData.uFlags.HasFlag(NotifyIconFlags.NIF_ICON))
+                    {
+                        _notifyIconData.uFlags |= NotifyIconFlags.NIF_ICON;
+                    }
+                }
+            }
         }
     }
 }
