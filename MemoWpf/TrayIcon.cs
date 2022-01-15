@@ -59,7 +59,7 @@ namespace Memo.WPF
 
     public class TrayIcon : IDisposable
     {
-        private const int APPWM_ICONNOTIFY = 102435;
+        private const int APPWM_ICONNOTIFY = 0x8000 + 1;
         private NotifyIconData _notifyIconData = new NotifyIconData();
 
         public TrayIcon(Window window)
