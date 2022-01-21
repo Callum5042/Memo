@@ -1,9 +1,13 @@
-﻿using Microsoft.Win32;
+﻿using Memo.WPF.Models;
+using Microsoft.Win32;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text.Json;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Interop;
@@ -27,7 +31,7 @@ namespace Memo.WPF.Windows
         [DllImport("user32.dll", EntryPoint = "SetForegroundWindow")]
         private static extern bool SetForegroundWindow(IntPtr hWnd);
 
-        private void Window_Loaded(object sender, RoutedEventArgs e)
+        private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
             // Add system tray icon
             _trayIcon = new TrayIcon(this)
@@ -50,11 +54,57 @@ namespace Memo.WPF.Windows
                 }
             };
 
-            // Load tab thing
-            var tab = new Tab() { Title = "New Tab" };
-            _tabs.Add(tab);
-            Tabs.SelectedItem = tab;
+            // Settings
+            var appData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            var memoPath = Path.Combine(appData, "Memo");
+            if (!Directory.Exists(memoPath))
+            {
+                Directory.CreateDirectory(memoPath);
+            }
 
+            // Check if file exists
+            var memoSettingsPath = Path.Combine(memoPath, "settings.json");
+            if (!File.Exists(memoSettingsPath))
+            {
+                // Add default 'New Tab'
+                var tab = new Tab() { Title = "New Tab" };
+                _tabs.Add(tab);
+                Tabs.SelectedItem = tab;
+            }
+            else
+            {
+                using var file = new FileStream(memoSettingsPath, FileMode.Open);
+                using var reader = new StreamReader(file);
+                var json = await reader.ReadToEndAsync();
+
+                if (!string.IsNullOrEmpty(json))
+                {
+                    var settings = JsonSerializer.Deserialize<Settings>(json);
+                    if (settings != null)
+                    {
+                        foreach (var tabSetting in settings.TabSettings)
+                        {
+                            if (!string.IsNullOrEmpty(tabSetting.Path))
+                            {
+                                using var tabSettingFile = File.OpenRead(tabSetting.Path);
+                                using var tabSettingReader = new StreamReader(tabSettingFile);
+
+                                var tab = new Tab()
+                                {
+                                    Text = await tabSettingReader.ReadToEndAsync(),
+                                    Title = tabSetting.Name
+                                };
+
+                                _tabs.Add(tab);
+                                Tabs.SelectedItem = tab;
+                            }
+                        }
+
+                    }
+                }
+            }
+
+            // Load tab thing
             DataContext = _tabs;
         }
 
@@ -128,6 +178,29 @@ namespace Memo.WPF.Windows
 
                 _tabs.Add(tab);
                 Tabs.SelectedItem = tab;
+
+                // Save to settings.json
+                var appData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+                var memoPath = Path.Combine(appData, "Memo");
+
+                var memoSettingsPath = Path.Combine(memoPath, "settings.json");
+                using var settingsFile = new FileStream(memoSettingsPath, FileMode.Open);
+                using var writer = new StreamWriter(settingsFile);
+
+                var settings = new Settings()
+                {
+                    TabSettings = new List<TabSettings>()
+                    {
+                        new TabSettings()
+                        {
+                            Name = dialog.SafeFileName,
+                            Path = dialog.FileName
+                        }
+                    }
+                };
+
+                var json = JsonSerializer.Serialize(settings);
+                await writer.WriteAsync(json);
             }
         }
 
