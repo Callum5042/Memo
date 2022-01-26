@@ -1,0 +1,74 @@
+﻿<Window x:Class="Memo.WPF.Windows.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Closing="Window_Closing"
+        Title="Memo" Height="450" Width="800">
+
+    <Window.Resources>
+        <ContextMenu x:Key="systemTrayContextMenu" Placement="MousePoint">
+            <MenuItem Header="Restore" Click="SystemTray_Click_Restore"></MenuItem>
+            <Separator />
+            <MenuItem Header="Exit" Click="SystemTray_Click_Exit"></MenuItem>
+        </ContextMenu>
+    </Window.Resources>
+    
+    <DockPanel>
+        
+        <DockPanel DockPanel.Dock="Top" Loaded="Window_Loaded">
+
+            <!-- Menu -->
+            <Menu x:Name="MenuBar" Background="White">
+                <MenuItem Header="File">
+                    <MenuItem Header="New Tab" Click="MenuItem_NewTab_Click"></MenuItem>
+                    <MenuItem Header="_Open" Click="MenuItem_Open_Click"></MenuItem>
+                    <MenuItem Header="Save" Click="MenuItem_Save_Click"></MenuItem>
+                    <Separator />
+                    <MenuItem Header="Exit" Click="MenuItem_Exit_Click"></MenuItem>
+                </MenuItem>
+            </Menu>
+
+        </DockPanel>
+        <DockPanel>
+
+            <!-- Tab Control -->
+            <TabControl x:Name="Tabs" ItemsSource="{Binding}">
+
+                <!-- Tab Resources-->
+                <TabControl.Resources>
+                    <ContextMenu x:Key="resourceContextMenu">
+                        <MenuItem Header="Rename" IsEnabled="False" Click="MenuItem_RenameTab_Click"></MenuItem>
+                        <MenuItem Header="Pop out" Click="MenuItem_PopOut_Click"></MenuItem>
+                        <MenuItem Header="Close" Click="MenuItem_CloseTab_Click"></MenuItem>
+                    </ContextMenu>
+                </TabControl.Resources>
+
+                <!-- Tab Styles -->
+                <TabControl.ItemContainerStyle>
+                    <Style TargetType="TabItem">
+                        <Setter Property="ContextMenu" Value="{StaticResource resourceContextMenu}" />
+                    </Style>
+                </TabControl.ItemContainerStyle>
+
+                <!-- Tab Item Header -->
+                <TabControl.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Title}" />
+                    </DataTemplate>
+                </TabControl.ItemTemplate>
+
+                <!-- Tab Item Content -->
+                <TabControl.ContentTemplate>
+                    <DataTemplate>
+                        <TextBox Text="{Binding Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Visible" Padding="2" />
+                    </DataTemplate>
+                </TabControl.ContentTemplate>
+
+            </TabControl>
+
+        </DockPanel>
+    </DockPanel>
+
+</Window>
