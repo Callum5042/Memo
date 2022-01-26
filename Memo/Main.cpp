@@ -36,11 +36,9 @@ public:
 			m_DefaultButton->Create(settings);
 			m_DefaultButton->OnClick = []()
 			{
-				MessageBox(NULL, L"Lambda button", L"Button", MB_OK);
+
 			};
 		}
-
-
 		// Add UI Elements
 		/*button = new MyButton(this);
 		button->Create(MTK::ButtonCreateSettings{ L"Click me", 10, 10, 100, 20, 1 });*/

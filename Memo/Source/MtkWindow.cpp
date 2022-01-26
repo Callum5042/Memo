@@ -1,5 +1,9 @@
 #include "../Include/MtkWindow.h"
 #include <exception>
+#include <strsafe.h>
+#include <windowsx.h>
+
+#define APPWM_ICONNOTIFY (WM_APP + 1)
 
 MTK::Window::~Window() 
 {
@@ -48,20 +52,60 @@ LRESULT MTK::Window::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
 		if (HIWORD(wParam) == BN_CLICKED)
 		{
-			auto button_id = LOWORD(wParam);
+			/*auto button_id = LOWORD(wParam);
 			auto button = m_PushButtons[button_id];
 			if (button->OnClick)
 			{
 				button->OnClick();
-			}
+			}*/
 		}
 
 		return 0;
 	}
 
 	case WM_CREATE:
+	{
 		OnCreate();
+
+		auto icon_image = LoadImage(NULL, L"C:\\Users\\Callum\\Desktop\\memo.ico", IMAGE_ICON, 0, 0, LR_LOADFROMFILE | LR_DEFAULTSIZE | LR_SHARED);
+
+		m_Icon.cbSize = sizeof(NOTIFYICONDATA);
+		m_Icon.hWnd = m_Hwnd;
+		m_Icon.uFlags = NIF_ICON | NIF_TIP | NIF_GUID | NIF_MESSAGE;
+		m_Icon.hIcon = static_cast<HICON>(icon_image);
+		StringCchCopy(m_Icon.szTip, ARRAYSIZE(m_Icon.szTip), L"Test application");
+		m_Icon.uCallbackMessage = APPWM_ICONNOTIFY;
+
+		Shell_NotifyIcon(NIM_ADD, &m_Icon);
+
 		return 0;
+	}
+
+	case APPWM_ICONNOTIFY:
+	{
+		if (LOWORD(lParam) == WM_CONTEXTMENU)
+		{
+			MessageBox(NULL, L"Context menu", L"Info", MB_OK);
+		}
+
+		if (lParam == WM_RBUTTONUP)
+		{
+			// MessageBox(NULL, L"System Tray", L"Info", MB_OK);
+
+			POINT cursor;
+			GetCursorPos(&cursor);
+
+			HMENU hPopupMenu = CreatePopupMenu();
+			InsertMenu(hPopupMenu, 0, MF_BYPOSITION | MF_STRING, 1000, L"Exit");
+			InsertMenu(hPopupMenu, 0, MF_BYPOSITION | MF_STRING, 1001, L"Play");
+			SetForegroundWindow(m_Hwnd);
+			TrackPopupMenu(hPopupMenu, TPM_BOTTOMALIGN | TPM_LEFTALIGN, cursor.x, cursor.y, 0, m_Hwnd, NULL);
+
+			PostMessage(m_Hwnd, WM_NULL, 0, 0);
+		}
+
+		return 0;
+	}
 
 	case WM_QUIT:
 		if (OnQuit())
@@ -74,6 +118,7 @@ LRESULT MTK::Window::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 		}
 
 	case WM_DESTROY:
+		Shell_NotifyIcon(NIM_DELETE, &m_Icon);
 		PostQuitMessage(0);
 		return 0;
 
