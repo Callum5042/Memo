@@ -1,0 +1,13 @@
+### To deploy to Linux server
+
+# Connect to server
+Run: 'ssh root@ip'
+
+# To view all running processes
+Run: 'ps -aux'
+
+# Build
+Run 'dotnet --configuration Release'
+
+# Run
+Run './RunescapeBot &'
